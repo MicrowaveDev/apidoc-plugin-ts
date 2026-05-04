@@ -1,0 +1,28 @@
+[
+  {
+    "type": "post",
+    "url": "/api/login",
+    "title": "",
+    "body": [
+      {
+        "group": "Body",
+        "type": "String",
+        "optional": false,
+        "field": "login",
+        "description": "<p><code>login</code> - Public login.</p>"
+      },
+      {
+        "group": "Body",
+        "type": "String",
+        "optional": false,
+        "field": "password",
+        "description": "<p><code>password</code> - User password.</p>"
+      }
+    ],
+    "group": "geesomeApiBodyRecord",
+    "version": "0.0.0",
+    "filename": "geesome-api-body-record/index.ts",
+    "groupTitle": "geesomeApiBodyRecord",
+    "name": "PostApiLogin"
+  }
+]

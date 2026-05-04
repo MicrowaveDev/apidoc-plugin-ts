@@ -30,6 +30,10 @@ const tests = [
   {
     only: false,
     name: 'geesome-api-param-record'
+  },
+  {
+    only: false,
+    name: 'geesome-api-body-record'
   }
 ]
 describe('Apidoc TS Plugin', () => {
