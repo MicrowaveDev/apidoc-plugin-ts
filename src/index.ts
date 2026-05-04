@@ -385,6 +385,12 @@ function getTargetElement (suffix: string): ApiElement {
       sourceName: 'apiParam'
     }
   }
+  if (suffix === 'apiBody') {
+    return {
+      name: 'apibody',
+      sourceName: 'apiBody'
+    }
+  }
 
   return API_SUCCESS_ELEMENT
 }
