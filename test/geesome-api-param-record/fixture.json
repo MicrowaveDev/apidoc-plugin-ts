@@ -1,0 +1,32 @@
+[
+  {
+    "type": "post",
+    "url": "/api/login",
+    "title": "",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "login",
+            "description": "<p><code>login</code> - Public login.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p><code>password</code> - User password.</p>"
+          }
+        ]
+      }
+    },
+    "group": "geesomeApiParamRecord",
+    "version": "0.0.0",
+    "filename": "geesome-api-param-record/index.ts",
+    "groupTitle": "geesomeApiParamRecord",
+    "name": "PostApiLogin"
+  }
+]
