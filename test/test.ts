@@ -26,20 +26,42 @@ const tests = [
   {
     only: false,
     name: 'namespaces'
+  },
+  {
+    only: false,
+    name: 'geesome-api-param-record'
   }
 ]
 describe('Apidoc TS Plugin', () => {
   tests.forEach(function (test) {
     (test.only ? it.only : (test.skip ? it.skip : it))(test.name, async function () {
       const dest = `out/${test.name}`
-      apidoc.createDoc({
-        src: `${test.name}`,
+      const result = apidoc.createDoc({
+        src: [`${test.name}`],
         debug: false,
         dest
       })
-      const outputJson = await fs.readJson(path.join('out', test.name, 'api_data.json'))
+      const outputJson = normalizeApiData(JSON.parse(result.data), test.name)
       const expectedJson = await fs.readJson(path.join(test.name, 'fixture.json'))
       expect(outputJson).to.deep.equal(expectedJson)
     })
   })
 })
+
+function normalizeApiData (items: any[], testName: string): any[] {
+  return items.map((item) => normalizeApiDataValue({
+    ...item,
+    filename: item.filename.includes('/') ? item.filename : `${testName}/${item.filename}`
+  }))
+}
+
+function normalizeApiDataValue (value: any): any {
+  if (Array.isArray(value)) return value.map(normalizeApiDataValue)
+  if (!value || typeof value !== 'object') return value
+
+  return Object.keys(value).reduce((normalized, key) => {
+    if (key === 'isArray' || key === 'parentNode') return normalized
+    normalized[key] = normalizeApiDataValue(value[key])
+    return normalized
+  }, {})
+}

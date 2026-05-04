@@ -1,19 +1,16 @@
 # apidoc-plugin-ts
 
-[![Build Status](https://travis-ci.org/geoblink/apidoc-plugin-ts.svg?branch=master)](https://travis-ci.org/geoblink/apidoc-plugin-ts)
-[![npm](https://img.shields.io/npm/v/@geoblink/apidoc-plugin-ts.svg)](https://www.npmjs.com/package/@geoblink/apidoc-plugin-ts) [![Greenkeeper badge](https://badges.greenkeeper.io/geoblink/apidoc-plugin-ts.svg)](https://greenkeeper.io/)
-
 A plugin for [apidoc](https://www.npmjs.com/package/apidoc) that injects `@apiSuccess` params from TypeScript interfaces.
 Supports extended and nested interfaces.
 
 ## Getting started
 
 ```javascript
-npm install --save-dev apidoc @geoblink/apidoc-plugin-ts
+npm install --save-dev apidoc apidoc-plugin-ts
 ```
 
 ```javascript
-yarn add -D apidoc @geoblink/apidoc-plugin-ts
+yarn add -D apidoc apidoc-plugin-ts
 ```
 
 A custom api-doc param `@apiInterface` is exposed:
@@ -21,6 +18,8 @@ A custom api-doc param `@apiInterface` is exposed:
 ```javascript
 @apiInterface (optional path to definitions file) {INTERFACE_NAME}
  ```
+
+The package name must start with `apidoc-plugin-` because `apidoc@1.x` auto-loads plugins from matching package names in `node_modules`.
 
 ## Example
 
@@ -64,3 +63,11 @@ under the hood this would transpile to:
 ```javascript
 @apiInterface {Person}
 ```
+
+GeeSome also uses the optional suffix to generate request parameters from TypeScript interfaces:
+
+```javascript
+@apiInterface (./users.ts) {UserInput} apiParam
+```
+
+This emits `@apiParam` entries instead of `@apiSuccess` entries. Interfaces that extend TypeScript utility bases such as `Record<string, any>` keep their own declared fields without warning about the built-in utility type.

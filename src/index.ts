@@ -123,7 +123,8 @@ function parseInterface (elements: Apidoc.Element[], newElements: Apidoc.Element
 }
 
 interface ParseResult {
-  element: string
+  targetElement: ApiElement
+  field: string
   interface: string
   path: string
 }
@@ -144,9 +145,12 @@ function parse (content: string): ParseResult | null {
   const matches = parseRegExp.exec(content)
 
   if (!matches) return null
+  const suffix = matches[3] ? matches[3].trim() : ''
+  const targetElement = getTargetElement(suffix)
 
   return {
-    element: matches[3] || 'apiSuccess',
+    targetElement,
+    field: targetElement.name === 'apisuccess' ? suffix : '',
     interface: matches[2],
     path: matches[1]
   }
@@ -167,8 +171,8 @@ function setArrayElements (
     values: ParseResult,
     inttype?: string
 ) {
-  const name = values.element
-  newElements.push(getApiSuccessElement(`{Object[]} ${name} ${name}`))
+  const name = values.field
+  newElements.push(getApiElement(values.targetElement, `{Object[]} ${name} ${name}`))
   setInterfaceElements.call(this, matchedInterface, filename, newElements, values, name)
 }
 /**
@@ -211,7 +215,7 @@ function setInterfaceElements (
       : getCapitalized(propType)
 
     // Set the element
-    newElements.push(getApiSuccessElement(`{${propLabel}} ${typeDef} ${description}`))
+    newElements.push(getApiElement(values.targetElement, `{${propLabel}} ${typeDef} ${description}`))
 
     // If property is an object or interface then we need to also display the objects properties
     if (propTypeIsObject) {
@@ -247,7 +251,7 @@ function setNativeElements (
 
   const propLabel = getCapitalized(values.interface)
   // Set the element
-  newElements.push(getApiSuccessElement(`{${propLabel}} ${values.element}`))
+  newElements.push(getApiElement(values.targetElement, `{${propLabel}} ${values.field}`))
   return
 }
 
@@ -280,11 +284,11 @@ function setObjectElements<NodeType extends ts.Node = ts.Node> (
 
     // Nothing to do if prop is of native type
     if (isNativeType(propType)) {
-      newElements.push(getApiSuccessElement(`{${getCapitalized(propType)}} ${typeDefLabel} ${desc}`))
+      newElements.push(getApiElement(values.targetElement, `{${getCapitalized(propType)}} ${typeDefLabel} ${desc}`))
       return
     }
 
-    const newElement = getApiSuccessElement(`{Object${propType.includes('[]') ? '[]' : ''}} ${typeDefLabel} ${desc}`)
+    const newElement = getApiElement(values.targetElement, `{Object${propType.includes('[]') ? '[]' : ''}} ${typeDefLabel} ${desc}`)
     newElements.push(newElement)
 
     // If property is an object or interface then we need to also display the objects properties
@@ -350,6 +354,7 @@ function extendInterface (
 ) {
   for (const extendedInterface of matchedInterface.getExtends()) {
     const extendedInterfaceName = extendedInterface.compilerNode.expression.getText()
+    if (isIgnoredExtendedType(extendedInterfaceName)) continue
     const parentNamespace = matchedInterface.getParentNamespace() || parseDefinitionFiles.call(this, interfacePath)
     const { namespace, leafName } = extractNamespace.call(this, parentNamespace, extendedInterfaceName)
     const matchedExtendedInterface = getNamespacedInterface.call(this, namespace, leafName)
@@ -363,12 +368,33 @@ function extendInterface (
   }
 }
 
-function getApiSuccessElement (param: string | number): Apidoc.Element {
+interface ApiElement {
+  name: string
+  sourceName: string
+}
+
+const API_SUCCESS_ELEMENT: ApiElement = {
+  name: 'apisuccess',
+  sourceName: 'apiSuccess'
+}
+
+function getTargetElement (suffix: string): ApiElement {
+  if (suffix === 'apiParam') {
+    return {
+      name: 'apiparam',
+      sourceName: 'apiParam'
+    }
+  }
+
+  return API_SUCCESS_ELEMENT
+}
+
+function getApiElement (element: ApiElement, param: string | number): Apidoc.Element {
   return {
     content: `${param}\n`,
-    name: 'apisuccess',
-    source: `@apiSuccess ${param}\n`,
-    sourceName: 'apiSuccess'
+    name: element.name,
+    source: `@${element.sourceName} ${param}\n`,
+    sourceName: element.sourceName
   }
 }
 
@@ -440,6 +466,10 @@ function getCapitalized (text: string): string {
 function isNativeType (propType: string): boolean {
   const nativeTypes = ['boolean', 'Boolean', 'string', 'String', 'number', 'Number', 'Date', 'any']
   return nativeTypes.indexOf(propType) >= 0
+}
+
+function isIgnoredExtendedType (typeName: string): boolean {
+  return typeName === 'Record' || typeName.startsWith('Record<')
 }
 
 function matchArrayInterface (interfaceName): ArrayMatch | null {

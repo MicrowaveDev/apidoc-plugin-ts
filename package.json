@@ -1,6 +1,6 @@
 {
-  "name": "@geoblink/apidoc-plugin-ts",
-  "version": "1.0.2",
+  "name": "apidoc-plugin-ts",
+  "version": "1.1.0",
   "description": "A plugin for apidoc leveraging TypeScript interfaces.",
   "main": "dist/index.js",
   "files": [
@@ -8,10 +8,10 @@
   ],
   "scripts": {
     "apidoc": "apidoc -i test/ -o test/out",
-    "copy:plugin": "rm -rf node_modules/apidoc-plugin-ts && ln -s ../../ node_modules/apidoc-plugin-ts",
+    "copy:plugin": "rm -rf node_modules/apidoc-plugin-ts && ln -s .. node_modules/apidoc-plugin-ts",
     "lint": "tslint --project tsconfig.json",
     "test": "yarn test-no-compile",
-    "test-no-compile": "cd test && mocha test.ts --opts='./mocha.opts'; cd ..",
+    "test-no-compile": "cd test && mocha test.ts --opts='./mocha.opts'",
     "build": "rm -rf dist && tsc -p src/tsconfig.json",
     "prepublishOnly": "run-s build lint test",
     "pretest": "rm -rf test/out && run-s build copy:plugin"
@@ -25,11 +25,11 @@
     "node": ">=6"
   },
   "bugs": {
-    "url": "https://github.com/geoblink/apidoc-plugin-ts/issues"
+    "url": "https://github.com/MicrowaveDev/apidoc-plugin-ts/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/geoblink/apidoc-plugin-ts.git"
+    "url": "https://github.com/MicrowaveDev/apidoc-plugin-ts.git"
   },
   "keywords": [
     "apidoc",
@@ -37,13 +37,13 @@
     "typescript"
   ],
   "peerDependencies": {
-    "apidoc": "^0.17.7"
+    "apidoc": "^1.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
-    "apidoc": "^0.17.7",
+    "apidoc": "^1.2.0",
     "chai": "^4.2.0",
     "copyfiles": "^2.1.0",
     "mocha": "^6.1.4",
